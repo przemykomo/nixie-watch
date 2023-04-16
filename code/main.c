@@ -17,7 +17,6 @@
 const uint8_t addr = 0b1101000;
 
 void rtc_init() {
-    _delay_ms(1000);
     i2c_master_init();
     /*
     i2c_master_start_condition();
@@ -25,8 +24,22 @@ void rtc_init() {
     i2c_master_write_byte(0x07); // address of the control register
     i2c_master_write_byte(0b00010001);
     i2c_master_stop_condition();*/
-    uint8_t data = 0b00010001;
-    i2c_master_write(addr, 0x07, &data, 1);
+    uint8_t data = 0b00010000;
+    i2c_master_write(0x68, 0x07, &data, 1);
+    data = 0b00000001;
+    i2c_master_write(0x68, 0x00, &data, 1);
+    data = 0b00000001;
+    i2c_master_write(0x68, 0x01, &data, 1);
+    data = 0b00000001;
+    i2c_master_write(0x68, 0x02, &data, 1);
+    data = 0b00000001;
+    i2c_master_write(0x68, 0x03, &data, 1);
+    data = 0b00000001;
+    i2c_master_write(0x68, 0x04, &data, 1);
+    data = 0b00000001;
+    i2c_master_write(0x68, 0x05, &data, 1);
+    data = 0b00000001;
+    i2c_master_write(0x68, 0x06, &data, 1);
 }
 /*
 void rtc_set_time(uint8_t h, uint8_t m, uint8_t s) {
@@ -92,9 +105,23 @@ void write(int first, int second) {
 int main() {
 
     // Set the SPI nixie driver pins to output
-    SHIFT_DIRECTION_PORT |= SHIFT_CLOCK | SHIFT_DATA;
-
+    //SHIFT_DIRECTION_PORT |= SHIFT_CLOCK | SHIFT_DATA;
+    
     rtc_init();
+    DDRB |= (1 << PB4);
+
+    while (1) {
+        _delay_ms(10000);
+        uint8_t data = 0;
+
+        i2c_master_read(0x68, 0x01, &data, 1);
+        for (uint8_t i = 0; i < data; i++) {
+            _delay_ms(200);
+            PORTB |= (1 << PB4);
+            _delay_ms(200);
+            PORTB &= ~(1 << PB4);
+        }
+    }
     /*
     rtc_set_time(0x00, 0x00, 0x00);
     uint8_t seconds = 0;
