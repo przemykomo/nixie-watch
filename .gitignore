@@ -1,3 +1,5 @@
+schematics/manufacturing/
+
 # Code:
 *.elf
 *.hex
