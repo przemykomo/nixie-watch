@@ -118,6 +118,20 @@ void write(int first, int second) {
     }
 }
 
+void write_time() {
+    // For some reason when I try to read multiple bytes at the same time I get invalid data.
+    // So I decided not to handle the 59 -> 0 minutes edge case.
+    uint8_t hours;
+    uint8_t minutes;
+    i2c_master_read(0x68, 0x02, &hours, 1);
+    i2c_master_read(0x68, 0x01, &minutes, 1);
+    write(hours & 0x0F, (hours & 0xF0) >> 4);
+    _delay_ms(1000);
+    write(minutes & 0x0F, (minutes & 0xF0) >> 4);
+    _delay_ms(1000);
+    write(RHDP, LHDP);
+}
+
 bool last_button_state = false;
 
 int main() {
@@ -177,7 +191,8 @@ int main() {
         i2c_master_write(0x68, 0x00, data, 8);
     }
 
-    write(RHDP, LHDP);
+    //write(RHDP, LHDP);
+    write_time();
 
     while (1) {
         _delay_ms(10);
@@ -187,17 +202,7 @@ int main() {
             _delay_ms(50);
             button_state = (BUTTON_PORT & BUTTON); // debouncing
             if (button_state) {
-                // For some reason when I try to read multiple bytes at the same time I get invalid data.
-                // So I decided not to handle the 59 -> 0 minutes edge case.
-                uint8_t hours;
-                uint8_t minutes;
-                i2c_master_read(0x68, 0x02, &hours, 1);
-                i2c_master_read(0x68, 0x01, &minutes, 1);
-                write(hours & 0x0F, (hours & 0xF0) >> 4);
-                _delay_ms(1000);
-                write(minutes & 0x0F, (minutes & 0xF0) >> 4);
-                _delay_ms(1000);
-                write(RHDP, LHDP);
+                write_time();
             }
         }
 
