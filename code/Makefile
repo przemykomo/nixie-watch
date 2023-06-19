@@ -1,4 +1,5 @@
-SRC = i2c/i2c-master.c main.c
+#SRC = i2c/i2c-master.c main.c
+SRC = main.c
 TARGET = output
 LIB = -Ii2c/
 
@@ -12,3 +13,10 @@ attiny: $(SRC)
 
 flash_attiny:
 	avrdude -c usbasp -p attiny45 -U flash:w:$(TARGET).hex
+
+attiny412: $(SRC)
+	avr-gcc -Os -mmcu=attiny412 -B dev/attiny412 -DF_CPU=16000000 $(SRC) -o $(TARGET).elf
+	avr-objcopy -O ihex $(TARGET).elf $(TARGET).hex
+
+flash_attiny412:
+	avrdude -c usbasp -p attiny412 -U flash:w:$(TARGET).hex

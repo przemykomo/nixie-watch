@@ -5,6 +5,8 @@
  *
  * This program can be distributed under the terms of the BSD License.
  * See the file LICENSE.
+ *
+ * Modified for ATtiny412
  */
 
 #pragma once
@@ -48,6 +50,8 @@
 #   define USI_OVF_VECT_I2C USI_OVERFLOW_vect
 #   define TIMSK_I2C TIMSK
 #   define TIMER_VECT_I2C TIMER0_COMPA_vect
+#elif defined(__AVR_ATtiny412__)
+
 #else
 #   error "Unsupported Attiny microcontroller."
 #endif
