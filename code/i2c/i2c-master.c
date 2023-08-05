@@ -14,7 +14,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "i2c-master.h"
-//#include <util/twi.h>
 
 // must be bigger than 4.7us and 4us
 // https://www.analog.com/en/technical-articles/i2c-timing-definition-and-specification-guide-part-2.html
@@ -26,16 +25,12 @@
 void
 i2c_master_init()
 {
-#if defined(__AVR_ATtiny412__)
-    TWI.MCTRLA |= (1 << 0) | (1 << 1);
-#else
     PORT_I2C |= (1 << SCL_I2C) | (1 << SDA_I2C);
     DDR_I2C  |= (1 << SCL_I2C) | (1 << SDA_I2C);
 
     USIDR = 0xFF;
     USICR = (1 << USIWM1) | (1 << USICS1) | (1 << USICLK);
     USISR = (1 << USISIF) | (1 << USIOIF) | (1 << USIPF) | (1 << USIDC);
-#endif
 }
 
 
